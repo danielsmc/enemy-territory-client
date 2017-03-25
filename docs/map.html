@@ -54,7 +54,7 @@ var map = new mapboxgl.Map({
 });
 map.addControl(new mapboxgl.GeolocateControl());
 
-var query = '{teamByID(id:"'+team+'") {locations {id,name,teamId,latitude,longitude}}}'
+var query = '{teamByID(id:"'+team+'") {locations {id,name,latitude,longitude,message}}}'
 
 map.on('load', function() {
 $.getJSON("https://cors-anywhere.herokuapp.com/http://graphql.tk:5000/", // Bounce off of cors-anywhere to get https. v secure.
@@ -78,7 +78,7 @@ $.getJSON("https://cors-anywhere.herokuapp.com/http://graphql.tk:5000/", // Boun
 	      })
 	   };
 
-	map.addLayer({
+	layer =map.addLayer({
         "id": "bars",
         "type": "symbol",
         "source": {
@@ -91,16 +91,29 @@ $.getJSON("https://cors-anywhere.herokuapp.com/http://graphql.tk:5000/", // Boun
             "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
             "text-offset": [0, 0.6],
             "text-anchor": "top",
-            // "description": "the next game is never"
         }
     });
 
-//     layer.on('layeradd', function(e) {
-//   var marker = e.layer,
-//     feature = marker.feature;
-//   var content = '<h2>' + feature.properties.name + '</h2>';
-//   marker.bindPopup(content);
-// });
+function buildPopup(p) {
+	return "<h3>"+p.name+"</h3>"+p.message;
+}
+
+map.on('click', function (e) {
+    var features = map.queryRenderedFeatures(e.point, { layers: ['bars'] });
+
+    if (!features.length) {
+        return;
+    }
+
+    var feature = features[0];
+
+    // Populate the popup and set its coordinates
+    // based on the feature found.
+    var popup = new mapboxgl.Popup()
+        .setLngLat(feature.geometry.coordinates)
+        .setHTML(buildPopup(feature.properties))
+        .addTo(map);
+});
 
 	var bounds = new mapboxgl.LngLatBounds();
 

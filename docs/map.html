@@ -8,7 +8,21 @@ div {
 	padding: 0;
 	border: 0;
 }
+
+.floater {
+	position: fixed;
+	top: 0.25em;
+	left: 0.25em;
+	color: white;
+	padding: 0.25em;
+	background-color: green;
+	text-decoration: none;
+	border-radius: 0.1em;
+
+}
 </style>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <script
 			  src="https://code.jquery.com/jquery-3.2.1.min.js"
 			  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -17,7 +31,9 @@ div {
 </head>
 <body>
 <div id='map' style='width: 100vw; height: 100vh;'></div>
+<a href="create.html" class="floater btn btn-success btn-lg">Create a New Party</a>
 <script>
+$("a.floater").attr("href","create.html"+location.search)
 function paramsObj() {
 	var obj = {};
 	var pairs = location.search.substring(1).split('&');
@@ -28,7 +44,7 @@ function paramsObj() {
 	return obj;
 }
 var params = paramsObj();
-console.log(params);
+// console.log(params);
 var team = params.team || "BOS";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWNsYXVnaGxpbiIsImEiOiJjajBwZmpnbDkwMHQxMzNud2ZtandkbGN5In0.pa7_xZbE3ZDF-cfFedFHjw';
@@ -61,7 +77,7 @@ $.getJSON("https://cors-anywhere.herokuapp.com/http://graphql.tk:5000/", // Boun
        }
 	      })
 	   };
-	   console.log(gjson);
+
 	map.addLayer({
         "id": "bars",
         "type": "symbol",
@@ -74,9 +90,17 @@ $.getJSON("https://cors-anywhere.herokuapp.com/http://graphql.tk:5000/", // Boun
             "text-field": "{name}",
             "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
             "text-offset": [0, 0.6],
-            "text-anchor": "top"
+            "text-anchor": "top",
+            // "description": "the next game is never"
         }
     });
+
+//     layer.on('layeradd', function(e) {
+//   var marker = e.layer,
+//     feature = marker.feature;
+//   var content = '<h2>' + feature.properties.name + '</h2>';
+//   marker.bindPopup(content);
+// });
 
 	var bounds = new mapboxgl.LngLatBounds();
 

@@ -18,9 +18,9 @@
             .single_team
             {
                 background-color: #f9f9f9;
-                float: left;
-                width: 30%;
-                max-width: 300px;
+                float:left;
+                width: 160px;
+                height: 210px;
                 padding: 10px;
                 margin: 6px;
                 text-align: center;
@@ -96,6 +96,7 @@
               $.each(teams, function (i, e) {
                   teamContainer.appendChild(makeTeamButton(e));
               });
+              $(teamContainer).append("<div class='clearfix'></div>")
             });
 
             function makeTeamButton(details)

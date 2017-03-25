@@ -8,7 +8,6 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-        <script src="js/mlb_teams.js"></script>
 
         <style>
             .row
@@ -78,9 +77,25 @@
         <script>
 
             var teamContainer = document.getElementById("team_selector");
+          
+            const query = `
+              {
+                teams {
+                  id
+                  name
+                  logo
+                  primary_color
+                  secondary_color
+                }
+              }
+            `;
 
-            $.each(teams, function (i, e) {
-                teamContainer.appendChild(makeTeamButton(e));
+            const url = `https://cors-anywhere.herokuapp.com/http://graphql.tk:5000?query=${query}`;
+            $.get(url, res => {
+              const teams = res.data.teams.filter((team) => team.logo !== null);
+              $.each(teams, function (i, e) {
+                  teamContainer.appendChild(makeTeamButton(e));
+              });
             });
 
             function makeTeamButton(details)
@@ -91,8 +106,8 @@
                 var logo = document.createElement("img");
                 logo.src = details.logo;
                 var teamName = document.createElement("p");
-                teamName.style.color = details.primaryColor;
-                teamName.innerHTML = details.location + " " + details.name;
+                teamName.style.color = details.primary_color;
+                teamName.innerHTML = details.name;
                 singleTeam.appendChild(logo);
                 singleTeam.appendChild(teamName);
 

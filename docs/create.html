@@ -145,6 +145,7 @@ map.on('load', function() {
                 var team_id = document.getElementById("team_id").value ;
                 var location_name = document.getElementById("location").value;
                 var group_name = document.getElementById("group").value;
+                var message = document.getElementById("message").value;
                 var lat = parseFloat(document.getElementById("lat").value);
                 var long = parseFloat(document.getElementById("long").value);
 
@@ -155,6 +156,7 @@ map.on('load', function() {
                         longitude: "${long}",
                         name: "${location_name}",
                         groupName: "${group_name}",
+                        message: "${message}",
                         teamId: "${team_id}"
                       }
                     ) {
@@ -205,6 +207,10 @@ map.on('load', function() {
                     <div class="form-group">
                         <label for="group">And our group is called...</label>
                         <input type="text" class="form-control" id="group" placeholder="My super fun group name like 'The Baseballers'">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">We want you to...</label>
+                        <input type="text" class="form-control" id="message" placeholder="Come watch the game with us!">
                     </div>
                 </div>
             </div>

@@ -18,6 +18,19 @@ div {
 <body>
 <div id='map' style='width: 100vw; height: 100vh;'></div>
 <script>
+function paramsObj() {
+	var obj = {};
+	var pairs = location.search.substring(1).split('&');
+	for(i in pairs){
+	    var split = pairs[i].split('=');
+	    obj[decodeURIComponent(split[0])] = decodeURIComponent(split[1]);
+	}
+	return obj;
+}
+var params = paramsObj();
+console.log(params);
+var team = params.team || "BOS";
+
 mapboxgl.accessToken = 'pk.eyJ1IjoibWNsYXVnaGxpbiIsImEiOiJjajBwZmpnbDkwMHQxMzNud2ZtandkbGN5In0.pa7_xZbE3ZDF-cfFedFHjw';
 var map = new mapboxgl.Map({
 	container: 'map',
@@ -25,11 +38,12 @@ var map = new mapboxgl.Map({
 });
 map.addControl(new mapboxgl.GeolocateControl());
 
-var team = "CIN";
 var query = '{teamByID(id:"'+team+'") {locations {id,name,teamId,latitude,longitude}}}'
 
 map.on('load', function() {
-$.getJSON("http://graphql.tk:5000/",{query:query}).then(function(d) {
+$.getJSON("https://cors-anywhere.herokuapp.com/http://graphql.tk:5000/", // Bounce off of cors-anywhere to get https. v secure.
+	{query:query})
+.then(function(d) {
 	var locs = d.data.teamByID.locations;
 	var gjson = {
 	       "type": "FeatureCollection",

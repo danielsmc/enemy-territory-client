@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>Create Watch Party</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="js/mlb_teams.js"></script>
+
+        <style>
+            .row
+            {
+                margin-top: 15px !important;
+            }
+        </style>
+
+        <script>
+            function submitWatchParty()
+            {
+                var createButt = document.getElementById("createButton");
+                createButt.innerHTML = "<i class='fa fa-spin fa-spinner'></i> Saving...";
+                createButt.setAttribute("disabled", "disabled");
+
+                var team_id = document.getElementById("team_id").value ;
+                var location_name = document.getElementById("location").value;
+                var group_name = document.getElementById("group").value;
+                var lat = parseFloat(document.getElementById("lat").value);
+                var long = parseFloat(document.getElementById("long").value);
+
+                console.log("submit data: " + team_id + ", " + location_name + ", " + group_name + ", " + lat + ", " + long);
+            }
+        </script>
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h1>Create Watch Party</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div id="map">map</div>
+                    <input id="lat" type="hidden" />
+                    <input id="long" type="hidden" />
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="location">We're gonna watch the:</label>
+                        <div id="team_container" style="border-radius: 8px;">
+                            <div class="pull-left">
+                                <img id="logo" style="width:50px;height:50px;" src="" />
+                            </div>
+                            <div class="pull-left" style="line-height: 50px; font-size: 24px; color: #FFF;">
+                                <span id="team_name"></span>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <input id="team_id" type="hidden" />
+                    </div>
+                    <div class="form-group">
+                        <label for="location">At...</label>
+                        <input type="text" class="form-control" id="location" placeholder="Name of restaurant or bar">
+                    </div>
+                    <div class="form-group">
+                        <label for="group">And our group is called...</label>
+                        <input type="text" class="form-control" id="group" placeholder="My super fun group name like 'The Baseballers'">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12" style="text-align: center;">
+                    <button id="createButton" class="btn btn-success btn-lg"><i class="fa fa-television"></i> Create My Watch Party!</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function paramsObj() 
+            {
+                var obj = {};
+                var pairs = location.search.substring(1).split('&');
+                for(i in pairs){
+                    var split = pairs[i].split('=');
+                    obj[decodeURIComponent(split[0])] = decodeURIComponent(split[1]);
+                }
+                return obj;
+            }
+            var params = paramsObj();
+            console.log(params);
+            var team = params.team;
+
+            document.getElementById("team_id").value = team;
+
+            const query = `
+              {
+                teamByID(id: "${team}") {
+                  name
+                  logo
+                  primary_color
+                }
+              }
+            `;
+
+            const url = `https://cors-anywhere.herokuapp.com/http://graphql.tk:5000?query=${query}`;
+            $.get(url, res => {
+              var team = res.data.teamByID;
+              document.getElementById("logo").src = team.logo;
+              document.getElementById("team_name").innerHTML = team.name;
+              document.getElementById("team_container").style.backgroundColor = team.primary_color;
+            });
+
+            document.getElementById("createButton").addEventListener("click", function (e) {
+                submitWatchParty();
+            });
+
+        </script>
+
+    </body>
+</html>

@@ -1,3 +1,4 @@
+
 var teams = [
     {
         id: "ARI",
@@ -142,3 +143,4 @@ function getLogoURLForTeam(team_id, callback)
     });
 }
 */
+

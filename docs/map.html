@@ -13,12 +13,6 @@ div {
 	position: fixed;
 	top: 0.25em;
 	left: 0.25em;
-	color: white;
-	padding: 0.25em;
-	background-color: green;
-	text-decoration: none;
-	border-radius: 0.1em;
-
 }
 </style>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -31,9 +25,12 @@ div {
 </head>
 <body>
 <div id='map' style='width: 100vw; height: 100vh;'></div>
-<a href="create.html" class="floater btn btn-success btn-lg"><i class="fa fa-plus"></i> Create a New Party</a>
+<div class="floater">
+<a href="create.html" id="create-btn" class="btn btn-success btn-lg"><i class="fa fa-plus"></i> Create a New Party</a>
+<a href="." class="btn btn-default btn-lg">Switch Team</a>
+</div>
 <script>
-$("a.floater").attr("href","create.html"+location.search)
+$("#create-btn").attr("href","create.html"+location.search)
 function paramsObj() {
 	var obj = {};
 	var pairs = location.search.substring(1).split('&');

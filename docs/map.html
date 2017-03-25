@@ -77,6 +77,16 @@ $.getJSON("https://cors-anywhere.herokuapp.com/http://graphql.tk:5000/", // Boun
             "text-anchor": "top"
         }
     });
+
+	var bounds = new mapboxgl.LngLatBounds();
+
+    gjson.features.forEach(function(f) {
+    	bounds.extend(f.geometry.coordinates);
+    });
+
+    map.fitBounds(bounds, {
+        padding: 20
+    });
 });
 });
 </script>

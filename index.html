@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>Enemy Territory</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="js/mlb_teams.js"></script>
+
+        <style>
+            .row
+            {
+                margin-top: 15px !important;
+            }
+
+            .single_team
+            {
+                background-color: #f9f9f9;
+                float: left;
+                width: 30%;
+                max-width: 300px;
+                padding: 10px;
+                margin: 6px;
+                text-align: center;
+                border-radius: 8px;
+                border: 1px solid #FFF;
+                cursor: pointer;
+            }
+
+            .single_team:hover
+            {
+                background-color: #d9edf7;
+                border-color: navy;
+                cursor: pointer;
+            }
+
+            .single_team img
+            {
+                width: 100%;
+                cursor: pointer;
+            }
+
+            .single_team p
+            {
+                font-size: 120%;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+
+    <body>
+        <form>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h1>Pick your Team</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="input-group">
+                            <span class="input-group-addon"><span class="glyphicon glyphicon-map-marker"></span></span>
+                            <input type="text" class="form-control" id="location" value="Current Location: Boston, MA, USA" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div id="team_selector"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <script>
+
+            var teamContainer = document.getElementById("team_selector");
+
+            $.each(teams, function (i, e) {
+                teamContainer.appendChild(makeTeamButton(e));
+            });
+
+            function makeTeamButton(details)
+            {
+                var singleTeam = document.createElement("div");
+                singleTeam.className = "single_team";
+                singleTeam.setAttribute("data-team-id", details.id);
+                var logo = document.createElement("img");
+                logo.src = details.logo;
+                var teamName = document.createElement("p");
+                teamName.style.color = details.primaryColor;
+                teamName.innerHTML = details.location + " " + details.name;
+                singleTeam.appendChild(logo);
+                singleTeam.appendChild(teamName);
+
+                singleTeam.addEventListener("click", function (e) {
+                    var selectedTeamId = e.target.parentNode.getAttribute("data-team-id");
+                    console.log("you selected: " + selectedTeamId);
+                    window.location.href = "/src/map.html?team=" + selectedTeamId;
+                });
+
+                return singleTeam;
+            }
+
+        </script>
+
+    </body>
+</html>

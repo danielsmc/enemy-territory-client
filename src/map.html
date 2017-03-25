@@ -1,18 +1,70 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script src='https://api.mapbox.com/mapbox-gl-js/v0.34.0/mapbox-gl.js'></script>
+<style>
+body,
+div {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+</style>
+<script
+			  src="https://code.jquery.com/jquery-3.2.1.min.js"
+			  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+			  crossorigin="anonymous"></script><script src='https://api.mapbox.com/mapbox-gl-js/v0.34.0/mapbox-gl.js'></script>
 <link href='https://api.mapbox.com/mapbox-gl-js/v0.34.0/mapbox-gl.css' rel='stylesheet' />
 </head>
 <body>
-<div id='map' style='width: 400px; height: 300px;'></div>
+<div id='map' style='width: 100vw; height: 100vh;'></div>
 <script>
 mapboxgl.accessToken = 'pk.eyJ1IjoibWNsYXVnaGxpbiIsImEiOiJjajBwZmpnbDkwMHQxMzNud2ZtandkbGN5In0.pa7_xZbE3ZDF-cfFedFHjw';
 var map = new mapboxgl.Map({
-container: 'map',
-style: 'mapbox://styles/mapbox/streets-v9'
+	container: 'map',
+	style: 'mapbox://styles/mapbox/streets-v9'
 });
 map.addControl(new mapboxgl.GeolocateControl());
+
+var team = "CIN";
+var query = '{teamByID(id:"'+team+'") {locations {id,name,teamId,latitude,longitude}}}'
+
+map.on('load', function() {
+$.getJSON("http://graphql.tk:5000/",{query:query}).then(function(d) {
+	var locs = d.data.teamByID.locations;
+	var gjson = {
+	       "type": "FeatureCollection",
+	       "features": locs.map(function(l) {
+	       		return {
+           "type": "Feature",
+           "properties": l,
+           "geometry": {
+               "type": "Point",
+               "coordinates": [
+                   l.longitude,
+                   l.latitude
+               ]
+           }
+       }
+	      })
+	   };
+	   console.log(gjson);
+	map.addLayer({
+        "id": "bars",
+        "type": "symbol",
+        "source": {
+	   type: 'geojson',
+	   data: gjson
+	},
+	"layout": {
+            "icon-image": "bar-15",
+            "text-field": "{name}",
+            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+            "text-offset": [0, 0.6],
+            "text-anchor": "top"
+        }
+    });
+});
+});
 </script>
 </body>
 </html>

@@ -10,6 +10,9 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <script src="js/mlb_teams.js"></script>
 
+        <script src='https://api.mapbox.com/mapbox-gl-js/v0.34.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.34.0/mapbox-gl.css' rel='stylesheet' />
+
         <style>
             .row
             {
@@ -18,6 +21,121 @@
         </style>
 
         <script>
+$(function() {
+    mapboxgl.accessToken = 'pk.eyJ1IjoibWNsYXVnaGxpbiIsImEiOiJjajBwZmpnbDkwMHQxMzNud2ZtandkbGN5In0.pa7_xZbE3ZDF-cfFedFHjw';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        center: [-71.05762159186017, 42.35320321855298],
+        zoom: 13,
+        style: 'mapbox://styles/mapbox/light-v9'
+    });
+    map.addControl(new mapboxgl.GeolocateControl());
+
+    var isDragging;
+
+// Is the cursor over a point? if this
+// flag is active, we listen for a mousedown event.
+var isCursorOverPoint;
+
+
+var canvas = map.getCanvasContainer();
+
+var geojson = {
+    "type": "FeatureCollection",
+    "features": [{
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [-71.05762159186017, 42.35320321855298]
+        }
+    }]
+};
+
+function mouseDown() {
+    if (!isCursorOverPoint) return;
+
+    isDragging = true;
+
+    // Set a cursor indicator
+    canvas.style.cursor = 'grab';
+
+    // Mouse events
+    map.on('mousemove', onMove);
+    map.once('mouseup', onUp);
+}
+
+function onMove(e) {
+    if (!isDragging) return;
+    var coords = e.lngLat;
+
+    // Set a UI indicator for dragging.
+    canvas.style.cursor = 'grabbing';
+
+    // Update the Point feature in `geojson` coordinates
+    // and call setData to the source layer `point` on it.
+    geojson.features[0].geometry.coordinates = [coords.lng, coords.lat];
+    map.getSource('point').setData(geojson);
+}
+
+function onUp(e) {
+    if (!isDragging) return;
+    var coords = e.lngLat;
+
+    // Print the coordinates of where the point had
+    // finished being dragged to on the map.
+    $("#lat").val(coords.lat);
+    $("#long").val(coords.lng);
+
+    canvas.style.cursor = '';
+    isDragging = false;
+
+    // Unbind mouse events
+    map.off('mousemove', onMove);
+}
+
+map.on('load', function() {
+
+    // Add a single point to the map
+    map.addSource('point', {
+        "type": "geojson",
+        "data": geojson
+    });
+
+    map.addLayer({
+        "id": "point",
+        "type": "circle",
+        "source": "point",
+        "paint": {
+            "circle-radius": 10,
+            "circle-color": "#3887be"
+        }
+    });
+
+    // If a feature is found on map movement,
+    // set a flag to permit a mousedown events.
+    map.on('mousemove', function(e) {
+        var features = map.queryRenderedFeatures(e.point, { layers: ['point'] });
+
+        // Change point and cursor style as a UI indicator
+        // and set a flag to enable other mouse events.
+        if (features.length) {
+            map.setPaintProperty('point', 'circle-color', '#3bb2d0');
+            canvas.style.cursor = 'move';
+            isCursorOverPoint = true;
+            map.dragPan.disable();
+        } else {
+            map.setPaintProperty('point', 'circle-color', '#3887be');
+            canvas.style.cursor = '';
+            isCursorOverPoint = false;
+            map.dragPan.enable();
+        }
+    });
+
+    // Set `true` to dispatch the event before other functions call it. This
+    // is necessary for disabling the default map dragging behaviour.
+    map.on('mousedown', mouseDown, true);
+});
+});
             function submitWatchParty()
             {
                 var createButt = document.getElementById("createButton");
@@ -62,7 +180,7 @@
             </div>
             <div class="row">
                 <div class="col-sm-6">
-                    <div id="map">map</div>
+                    <div id='map' style='width: 100%; height: 20em;'></div>
                     <input id="lat" type="hidden" />
                     <input id="long" type="hidden" />
                 </div>

@@ -54,7 +54,7 @@ var map = new mapboxgl.Map({
 });
 map.addControl(new mapboxgl.GeolocateControl());
 
-var query = '{teamByID(id:"'+team+'") {locations {id,name,latitude,longitude,message}}}'
+var query = '{teamByID(id:"'+team+'") {locations {id,name,groupName,latitude,longitude,message}}}'
 
 map.on('load', function() {
 $.getJSON("https://cors-anywhere.herokuapp.com/http://graphql.tk:5000/", // Bounce off of cors-anywhere to get https. v secure.
@@ -95,7 +95,8 @@ $.getJSON("https://cors-anywhere.herokuapp.com/http://graphql.tk:5000/", // Boun
     });
 
 function buildPopup(p) {
-	return "<h3>"+p.name+"</h3>"+p.message;
+
+	return "<h3>"+p.groupName+"</h3>"+p.message;
 }
 
 map.on('click', function (e) {

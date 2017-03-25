@@ -148,7 +148,25 @@ map.on('load', function() {
                 var lat = parseFloat(document.getElementById("lat").value);
                 var long = parseFloat(document.getElementById("long").value);
 
-                console.log("submit data: " + team_id + ", " + location_name + ", " + group_name + ", " + lat + ", " + long);
+                const query = `
+                  {
+                    addLocation(location: {
+                        latitude: "${lat}",
+                        longitude: "${long}",
+                        name: "${location_name}",
+                        groupName: "${group_name}",
+                        teamId: "${team_id}"
+                      }
+                    ) {
+                      id
+                    }
+                  }
+                `;
+
+                const url = `https://cors-anywhere.herokuapp.com/http://graphql.tk:5000?query=${query}`;
+                $.get(url, res => {
+                  window.location.href = "map.html?team=" + team_id;
+                });
             }
         </script>
     </head>
@@ -227,6 +245,7 @@ map.on('load', function() {
             const url = `https://cors-anywhere.herokuapp.com/http://graphql.tk:5000?query=${query}`;
             $.get(url, res => {
               var team = res.data.teamByID;
+              
               document.getElementById("logo").src = team.logo;
               document.getElementById("team_name").innerHTML = team.name;
               document.getElementById("team_container").style.backgroundColor = team.primary_color;

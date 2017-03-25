@@ -45,13 +45,21 @@
             <div class="row">
                 <div class="col-sm-6">
                     <div id="map">map</div>
-                    <input id="lat" type="text" />
-                    <input id="long" type="text" />
+                    <input id="lat" type="hidden" />
+                    <input id="long" type="hidden" />
                 </div>
                 <div class="col-sm-6">
                     <div class="form-group">
                         <label for="location">We're gonna watch the:</label>
-                        <input type="text" class="form-control" id="team" placeholder="Name of restaurant or bar">
+                        <div id="team_container" style="border-radius: 8px;">
+                            <div class="pull-left">
+                                <img id="logo" style="width:50px;height:50px;" src="" />
+                            </div>
+                            <div class="pull-left" style="line-height: 50px; font-size: 24px; color: #FFF;">
+                                <span id="team_name"></span>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
                         <input id="team_id" type="hidden" />
                     </div>
                     <div class="form-group">
@@ -88,7 +96,23 @@
 
             document.getElementById("team_id").value = team;
 
-            //TODO: bind team
+            const query = `
+              {
+                teamByID(id: "${team}") {
+                  name
+                  logo
+                  primary_color
+                }
+              }
+            `;
+
+            const url = `https://cors-anywhere.herokuapp.com/http://graphql.tk:5000?query=${query}`;
+            $.get(url, res => {
+              var team = res.data.teamByID;
+              document.getElementById("logo").src = team.logo;
+              document.getElementById("team_name").innerHTML = team.name;
+              document.getElementById("team_container").style.backgroundColor = team.primary_color;
+            });
 
             document.getElementById("createButton").addEventListener("click", function (e) {
                 submitWatchParty();
